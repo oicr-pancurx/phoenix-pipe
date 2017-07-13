@@ -1,0 +1,39 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs(trailingOnly=T);
+
+if(!file.exists(args[1])) {
+	stop("#ERR: file",args[1],"does not exist\n");
+}
+if(length(args)>1) {
+	SName <- args[2];
+} else {
+	SName <- "Sample";
+}
+chrs <- data.frame(Chr=1:25,Length=c(249250621,243199373,198022430,191154276,180915260,171115067,159138663,146364022,141213431,135534747,135006516,133851895,115169878,107349540,102531392,90354753,81195210,78077248,59128983,63025520,48129895,51304566,155270560,59373566,0));
+svraw <- read.table(pipe(paste("cut -f-5 ",args[1])),header=T,sep="\t",stringsAsFactors=F);
+svraw$Name <- SName; nc <- ncol(svraw); svall <- svraw <- svraw[,c(nc,1:(nc-1))];
+svall$chrom1 <- as.integer(sub("X","23",sub("Y","24",sub("MT*","25",sub("chr","",svall$chrom1)))));
+svall$chrom2 <- as.integer(sub("X","23",sub("Y","24",sub("MT*","25",sub("chr","",svall$chrom2)))));
+svsn <- data.frame(Name=sort(unique(svall[,1])),stringsAsFactors=F);
+nm <- unique(svall$type);
+aa <- table(svall$Name,svall$type);
+for(j in 1:4) svsn[[colnames(aa)[j]]] <- aa[j];
+svsn$nSV <- sum(aa[1:4]);
+svsn$Type <- NA;
+if(svsn$nSV <= 50) {
+	svsn$Type <- 1;
+} else if(svsn$nSV > 200) {
+	svsn$Type <- 4;
+} else {
+	aa <- table(svall$chrom1[!is.na(svall$chrom1) & svall$chrom1==svall$chrom2]); aa<-aa/chrs$Length[as.integer(names(aa))]*1e6;
+	aa3 <- summary(as.data.frame(aa)$Freq);
+	svsn$nchrlr <- sum(aa>aa3[5]+5*(aa3[5]-aa3[2]));
+	svsn$nchrlr_other <- sum(aa > 0 & aa<=aa3[5]+5*(aa3[5]-aa3[2]));
+	ix <- which(is.na(svsn$Type) & svsn$nchrlr==0 & svsn$nchrlr_other >= 10); svsn$Type[ix] <- 3;
+	ix <- which(!is.na(svall$chrom1) & svall$chrom1==svall$chrom2); aa1 <- table(svall$Name[ix],svall$chrom1[ix]);
+	svsn$Type[is.na(svsn$Type) & svsn$nchrlr >= 1] <- 2;
+}
+svsn$SubType <- c("Stable","Loc Rearr","Scattered","Unstable")[svsn$Type];
+write.table(svsn[,c("Name","SubType")],col.names=F,row.names=F,quote=F,sep="\t");
+
