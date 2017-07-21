@@ -141,7 +141,7 @@ if( !file.exists( paste( rdapipe,"/lm.rda", sep=""))  | !file.exists( paste(  rd
 } else {
   load( paste(  rdapipe,"/lm.rda", sep="" ) )
   load( paste(  rdapipe,"/paramSpace.rda", sep="" ) )
-  prepCN( 12,1,NULL )
+  prepCN( 100,1,NULL )
 }
 
 
