@@ -4198,7 +4198,7 @@ sub doNetMHC
 		close SUBFILE;
 
 		open (COMMAND, ">$dir/$outName.cmd") or die;
-		print COMMAND "$perlLib; module load $module; cat $vcfFile | $vcfToPeptide | sort | uniq > $dir/$outName.peptides; for i in `cat $hlaFile | sed 's/\\*//' | sed 's/^/HLA-/'`; do $program -a \$i -p $dir/$outName.peptides > $dir/$outName.\$i.txt; done\n";
+		print COMMAND "$perlLib; module load $module; cat $vcfFile | $vcfToPeptide > $dir/$outName.peptideMap; cut -f 5 $dir/$outName.peptideMap | sort | uniq > $dir/$outName.peptides; for i in `cat $hlaFile | sed 's/\\*//' | sed 's/^/HLA-/'`; do $program -a \$i -p $dir/$outName.peptides > $dir/$outName.\$i.txt; done\n";
 		print COMMAND "\necho phoenixPipe/$module-done\n";
 		close COMMAND;
 

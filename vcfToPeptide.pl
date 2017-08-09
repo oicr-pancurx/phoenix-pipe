@@ -213,7 +213,7 @@ while ($l = <STDIN>)
 								$peptide = substr($newAA, $aaPos-$i, $pepLength);
 								if (length($peptide) == $pepLength)
 								{
-									print $peptide . "\n";
+									print "$chr\t$pos\t$ref\t$alt\t$peptide\n";
 								}
 							}
 						}
