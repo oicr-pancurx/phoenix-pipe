@@ -133,7 +133,7 @@ chomp $date;
 
 unless (-e "sorttable.js")
 {
-	`ln -s ~rdenroche/sorttable.js`;
+	`ln -s /.mounts/labs/PCSI/production/phoenix-report/sorttable.js`;
 }
 
 
@@ -752,7 +752,7 @@ unless (exists $opt{G})
 		
 		    warn "graphing $j\n";
 		
-		    `~rdenroche/jsonToGraphs.pl $j`;
+		    `/.mounts/labs/PCSI/production/json-report/jsonToGraphs.pl $j`;
 		}
 	}
 }

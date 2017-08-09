@@ -3,8 +3,19 @@
 use strict;
 use warnings;
 
+my $commandLine = join " ", $0, @ARGV;
+
 my $nFastqDir = $ARGV[0];
 my $tFastqDir = $ARGV[1];
+
+
+
+my $prodCode = "/.mounts/labs/PCSI/production/";
+my $pipeCode = "$prodCode/phoenix-pipe";
+my $callCode = "$prodCode/simple-caller";
+my $parseCode = "$prodCode/phoenix-parse";
+my $reportCode = "$prodCode/phoenix-report";
+my $jsonCode = "$prodCode/json-report";
 
 my %refHash = (
 #	"sge_queue" => "clinical,transient",	# not supported by all subroutines yet
@@ -25,27 +36,27 @@ my %refHash = (
 	"strelka/v0.4.7-exome" => "/oicr/local/analysis/sw/strelka/strelka_workflow-0.4.7/strelka/etc/strelka_config_bwa_exome.ini",
 	"strelka/v0.4.7-wgs" => "/oicr/local/analysis/sw/strelka/strelka_workflow-0.4.7/strelka/etc/strelka_config_bwa_wgs.ini",
 	"xenome/1.0.1-r" => "/oicr/data/reference/genomes/xenome/2013Mar/idx",
-	"xenome-fix" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/fixXenome.pl",
-	"samStats.pl" => "/u/rdenroche/svn/seq_prod_bio/pipeline/jsonReport/samStats.pl",
+	"xenome-fix" => "$pipeCode/fixXenome.pl",
+	"samStats.pl" => "$jsonCode/samStats.pl",
 #	"exome-target" => "/oicr/data/genomes/homo_sapiens/Agilent/SureSelect_Whole_Exome_ICGC_Sanger/GRCh37hg19/sanger.exons.bed.hg19",		# assuming agilent capture!
 	"exome-target" => "/oicr/data/reference/genomes/homo_sapiens_mc/Agilent/SureSelectHumanAllExonV4/S03723314_Regions.bed",		# assuming agilent capture!
 	"wgs-target" => "/oicr/data/genomes/homo_sapiens/UCSC/Genomic/UCSC_hg19_random/hg19_random.genome.sizes.bed",
 
-	"add-annovar-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addAnnovarToVCF.pl",
-	"add-funseq-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addFunseqToVCF.pl",
-	"add-dbsnp-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addDBSnpToVCF.pl",
-	"add-cosmic-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addCosmicToVCF.pl",
-	"add-bed-track-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addBedTrackToVCF.pl",
-	"remove-mouse-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/removeMouseVars.pl",
-	"select-bed-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/selectBed.pl",
-	"select-filter-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/selectFilter.pl",
-	"annotate-verification-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/annotateWithVerification.pl",
-	"add-dcc-metadata" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addDccMetadata.pl",
-	"intersect-vcf-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/intersectVCF.pl",
+	"add-annovar-script" => "$pipeCode/addAnnovarToVCF.pl",
+	"add-funseq-script" => "$pipeCode/addFunseqToVCF.pl",
+	"add-dbsnp-script" => "$pipeCode/addDBSnpToVCF.pl",
+	"add-cosmic-script" => "$pipeCode/addCosmicToVCF.pl",
+	"add-bed-track-script" => "$pipeCode/addBedTrackToVCF.pl",
+	"remove-mouse-script" => "$pipeCode/removeMouseVars.pl",
+	"select-bed-script" => "$pipeCode/selectBed.pl",
+	"select-filter-script" => "$pipeCode/selectFilter.pl",
+	"annotate-verification-script" => "$pipeCode/annotateWithVerification.pl",
+	"add-dcc-metadata" => "$pipeCode/addDccMetadata.pl",
+	"intersect-vcf-script" => "$pipeCode/intersectVCF.pl",
 
-	"gatk/1.3.16 helper" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/oicr_gatk_helper_1_3.sh",
-	"gatk/1.3.16 waiter" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/gatkWaiter.pl",
-	"gatk germline filter" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/pullGermlineFromGATK.pl",
+	"gatk/1.3.16 helper" => "$pipeCode/oicr_gatk_helper_1_3.sh",
+	"gatk/1.3.16 waiter" => "$pipeCode/gatkWaiter.pl",
+	"gatk germline filter" => "$pipeCode/pullGermlineFromGATK.pl",
 
 	"bwa/0.6.2-mouse-blacklist" => "/oicr/data/reference/genomes/homo_sapiens_mc/BWA-0.6.2_Mouse_Blacklist/mouseall-bwa_0.6.2.vcf.gz",
 	"novocraft/3.00.05-mouse-blacklist" => "/.mounts/labs/prod/phoenix/PCSI/oldmouse/mouseall-novocraft_2.07.05.vcf.gz",
@@ -57,56 +68,56 @@ my %refHash = (
 	"simpleRepeat" => "/oicr/data/reference/genomes/homo_sapiens_mc/UCSC/hg19_random/Genomic/tracks/UCSC-simpleRepeat-130723.bed.gz",
 
 	"R module" => "R/3.3.0",
-	"HMM R script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/HMM_pipe_R_v4.sh",
+	"HMM R script" => "$pipeCode/HMM_pipe_R_v4.sh",
 
 	"blat ref" => "/oicr/data/reference/genomes/homo_sapiens_mc/UCSC/hg19_random/Genomic/blat/hg19_random.fa.2bit",
 	"blat host" => "cn5-80",
 	"blat port" => "9998",
 	# restart blat server (after qrsh'ing to specific node): nohup gfServer start cn5-83 9998 /oicr/data/reference/genomes/homo_sapiens_mc/UCSC/hg19_random/Genomic/blat/hg19_random.fa.2bit -canStop &
-	"crest filter script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/crestFilter_v2.pl",
+	"crest filter script" => "$pipeCode/crestFilter_v2.pl",
 
 	"gavin python" => "/.mounts/labs/steinlab/public/gavin/local/bin/python",		# currently required for delly filtering script
-	"delly filter script" => " /u/rdenroche/git/spb-analysis-tools/phoenixPipe/dellyFilter.py",
-	"sv merge script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/svMerge.py",
-	"sv annotate script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addGenesToSV.pl",
+	"delly filter script" => "$pipeCode/dellyFilter.py",
+	"sv merge script" => "$pipeCode/svMerge.py",
+	"sv annotate script" => "$pipeCode/addGenesToSV.pl",
 	"refseq genes tabix" => "/oicr/data/reference/genomes/homo_sapiens_mc/refSeq/refSeq_genes.bed.gz",
 
-	"somatic vcf report" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/vcfReport.pl",
+	"somatic vcf report" => "$pipeCode/vcfReport.pl",
 
-	"sid bed file" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/sampleIdentity/SID_both.bed",
-	"rob caller script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/sampleIdentity/robCaller_v2.0.pl",
-	"rob genotyper script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/sampleIdentity/robGenotyper.pl",
+	"sid bed file" => "$callCode/SID_both.bed",
+	"rob caller script" => "$callCode/robCaller_v2.0.pl",
+	"rob genotyper script" => "$callCode/robGenotyper.pl",
 
-	"one page script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/onePageReport_v2.pl",
+	"one page script" => "$pipeCode/onePageReport_v2.pl",
 
 	"ATHLATES_novocraft/2.07.06" => "/oicr/local/analysis/sw/ATHLATES/Athlates_2014_04_26/db/ref/hla.clean.fasta.ndx",
 	"ATHLATES_bed_path" => "/oicr/local/analysis/sw/ATHLATES/Athlates_2014_04_26/db/bed",
 	"ATHLATES_msa_path" => "/oicr/local/analysis/sw/ATHLATES/Athlates_2014_04_26/db/msa",
-	"vcf_to_peptide" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/vcfToPeptide.pl",
+	"vcf_to_peptide" => "$pipeCode/vcfToPeptide.pl",
 
 	"gc_wig" => "/oicr/data/reference/genomes/homo_sapiens_mc/celluloid/gc.wig",
 	"map_wig" => "/oicr/data/reference/genomes/homo_sapiens_mc/celluloid/map.wig",
-	"celluloid_mchan" => "/u/rdenroche/git/spb-analysis-tools/PCSI/celluloid/run_celluloid_v0.11.R",
-	"celluloid_gatk_to_af" => "/.mounts/labs/PCSI/users/rdenroche/phoenixPipe/vcf2het.csh",
+	"celluloid_mchan" => "$pipeCode/run_celluloid_v0.11_mchan.R",
+	"celluloid_gatk_to_af" => "$pipeCode/vcf2het.csh",
 
-	"celluloid_v11" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/celluloid_v0.11.0_pipeline.r",
-	"tabix_bed_script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/tabixIndexCelluloid.sh",
+	"celluloid_v11" => "$pipeCode/celluloid_v0.11.0_pipeline.r",
+	"tabix_bed_script" => "$pipeCode/tabixIndexCelluloid.sh",
 
-	"gatk_to_af" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/gatkToHetAR.pl",
-	"cna_segment_to_fixed" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/hmmcopySegsForChromo.pl",
-	"chromo_script" => "/u/rdenroche/git/spb-analysis-tools/PCSI/chromothripsis/chromothripsis.R",
+	"gatk_to_af" => "$pipeCode/gatkToHetAR.pl",
+	"cna_segment_to_fixed" => "$pipeCode/hmmcopySegsForChromo.pl",
+	"chromo_script" => "$pipeCode/chromothripsis.R",
 
-	"germline pathogen script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/germlinePathogenicFilter.sh",
+	"germline pathogen script" => "$pipeCode/germlinePathogenicFilter.sh",
 
 	"perl lib path" => "export PERL5LIB=/.mounts/labs/PCSI/perl/lib/x86_64-linux-gnu/perl/5.20.2/:/.mounts/labs/PCSI/perl/share/perl/5.20.2:/.mounts/labs/PCSI/perl/lib/perl5/:/.mounts/labs/PCSI/perl/lib/perl5/x86_64-linux-gnu-thread-multi/",
 
-	"qc script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/qcPhoenixPipe.pl",
-	"phoenix parser" => "/.mounts/labs/PCSI/users/rdenroche/phoenixParser/phoenixParser.pl",
-	"phoenix reporter" => "/.mounts/labs/PCSI/users/rdenroche/phoenixReporter/phoenixReporter.pl",
-	"short reporter" => "/.mounts/labs/PCSI/users/rdenroche/phoenixReporter/shortReport.pl",
-	"report plots" => "/.mounts/labs/PCSI/users/rdenroche/phoenixReporter/runPlots.sh",
+	"qc script" => "$pipeCode/qcPhoenixPipe.pl",
+	"phoenix parser" => "$parseCode/phoenixParser.pl",
+	"phoenix reporter" => "$reportCode/phoenixReporter.pl",
+	"short reporter" => "$reportCode/shortReport.pl",
+	"report plots" => "$reportCode/runPlots.sh",
 
-	"cosmicSigNNLS script" => "/.mounts/labs/PCSI/users/rdenroche/cosmicSigNNLS/vcfToSigs.pl",
+	"cosmicSigNNLS script" => "$pipeCode/vcfToSigs.pl",
 );
 
 
@@ -318,7 +329,7 @@ unless ($tFastqDir eq "single")
 	
 	
 	
-		doQC("bwa/0.6.2", \%tMeta, \%nMeta, \%refHash);
+		doQC("bwa/0.6.2", \%tMeta, \%nMeta, \%refHash, $commandLine);
 		doPhoenixParser("bwa/0.6.2", \%tMeta, \%refHash);
 	
 		doProvenance(\%nMeta, \%tMeta);
@@ -430,7 +441,7 @@ elsif ($doSub eq "go")
 
 	doSamStatsMerge("bwa/0.6.2", \%nMeta, \%refHash);
 
-	doQCsingle("bwa/0.6.2", \%nMeta, \%refHash);
+	doQCsingle("bwa/0.6.2", \%nMeta, \%refHash, $commandLine);
 
 	#doProvenance(\%nMeta, \%tMeta); needs to be refactored to handle single samples
 }
@@ -4453,6 +4464,7 @@ sub doQC
 	my $tHash = $_[1];
 	my $nHash = $_[2];
 	my $refHash = $_[3];
+	my $commandLine = $_[4];
 
 	# put qc in the sample root
 	my $path = buildPath($tHash);
@@ -4476,6 +4488,10 @@ sub doQC
 	print COMMAND "$perlLib; $qcScript $path/$bamModule tumour > $dir/$outName.qc.txt\n";
 	print COMMAND "\necho phoenixPipe/qc-done\n";
 	close COMMAND;
+
+	open (COMMANDLINE, ">$dir/$outName.commandLine") or die;
+	print COMMANDLINE "$commandLine\n";
+	close COMMANDLINE;
 
 	`bash $dir/$outName.qc.sub`;
 
@@ -4509,6 +4525,7 @@ sub doQCsingle
 	my $bamModule = $_[0];
 	my $nHash = $_[1];
 	my $refHash = $_[2];
+	my $commandLine = $_[3];
 
 	# put qc in the sample root
 
@@ -4534,6 +4551,10 @@ sub doQCsingle
 	print COMMAND "$perlLib; $qcScript $path/$bamModule normal > $dir/$outName.qc.txt\n";
 	print COMMAND "\necho phoenixPipe/qc-done\n";
 	close COMMAND;
+
+	open (COMMANDLINE, ">$dir/$outName.commandLine") or die;
+	print COMMANDLINE "$commandLine\n";
+	close COMMANDLINE;
 
 	`bash $dir/$outName.qc.sub`;
 

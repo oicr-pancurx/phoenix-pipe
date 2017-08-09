@@ -11,7 +11,7 @@ my $crest = $ARGV[0];
 my $bam = $ARGV[1];
 #my $normal_bam = $ARGV[2];
 
-my $scriptPath = "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/";		# path to findSupportingPairs.pl
+my $scriptPath = "/.mounts/labs/PCSI/production/phoenix-pipe";		# path to findSupportingPairs.pl
 
 my $smallDelSize = 1000;			# if type is deletion flag if break point are less than $dist bases apart and fewer than 2 clips on either side
 my $smallDelClipMin = 3;

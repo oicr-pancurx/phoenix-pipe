@@ -7,20 +7,22 @@ my $vcf = $ARGV[0];
 my $vcfBase = `basename $vcf`;
 chomp $vcfBase;
 
+my $pipeCode = "/.mounts/labs/PCSI/production/phoenix-pipe";
+
 my %refHash = (
 	"annovar" => "annovar/2013-06-21",
 
-    "add-annovar-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addAnnovarToVCF.pl",
-    "add-dbsnp-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addDBSnpToVCF.pl",
-	"add-cosmic-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addCosmicToVCF.pl",
-    "add-bed-track-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addBedTrackToVCF.pl",
-    "remove-mouse-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/removeMouseVars.pl",
-    "select-bed-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/selectBed.pl",
-    "select-filter-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/selectFilter.pl",
-    "annotate-verification-script" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/annotateWithVerification.pl",
-    "add-dcc-metadata" => "/u/rdenroche/git/spb-analysis-tools/phoenixPipe/addDccMetadata.pl",
+    "add-annovar-script" => "$pipeCode/addAnnovarToVCF.pl",
+    "add-dbsnp-script" => "$pipeCode/addDBSnpToVCF.pl",
+	"add-cosmic-script" => "$pipeCode/addCosmicToVCF.pl",
+    "add-bed-track-script" => "$pipeCode/addBedTrackToVCF.pl",
+    "remove-mouse-script" => "$pipeCode/removeMouseVars.pl",
+    "select-bed-script" => "$pipeCode/selectBed.pl",
+    "select-filter-script" => "$pipeCode/selectFilter.pl",
+    "annotate-verification-script" => "$pipeCode/annotateWithVerification.pl",
+    "add-dcc-metadata" => "$pipeCode/addDccMetadata.pl",
 
-    "bwa/0.6.2-mouse-blacklist" => "/isilon4/seqprodbio/phoenix/PCSI/bwamouse/mouseall-bwa_0.6.2.vcf.gz",
+    "bwa/0.6.2-mouse-blacklist" => "/oicr/data/reference/genomes/homo_sapiens_mc/BWA-0.6.2_Mouse_Blacklist/mouseall-bwa_0.6.2.vcf.gz",
     "novocraft/3.00.05-mouse-blacklist" => "/isilon4/seqprodbio/phoenix/PCSI/oldmouse/mouseall-novocraft_2.07.05.vcf.gz",
     "exome-target-tabix" => "/oicr/data/reference/genomes/homo_sapiens_mc/Agilent/SureSelectHumanAllExonV4/S03723314_Regions.merged.bed.gz",
     "dbsnp-tabix" => "/oicr/data/reference/genomes/homo_sapiens_mc/dbSNP/hg19_random/Genomic/dbSNP137/dbSNP137_chr.vcf.gz",
