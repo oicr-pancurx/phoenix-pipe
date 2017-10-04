@@ -4652,6 +4652,9 @@ sub doMoreAnnovar
 		print COMMAND " | grep -v Func.refGene >> $dir/$outName.output.vcf.hg19_multianno.txt\n";
 
 		print COMMAND "module load tabix; cat $dir/$outName.output.vcf.hg19_multianno.txt | bgzip > $dir/$outName.output.vcf.hg19_multianno.txt.gz; tabix -p bed $dir/$outName.output.vcf.hg19_multianno.txt.gz\n";
+
+		print COMMAND "rm $dir/$outName.*.txt $dir/$outName.*.vcf $dir/$outName.*.invalid_input\n";
+
 		print COMMAND "\necho phoenixPipe/more_annovar-done\n";
 		close COMMAND;
 
