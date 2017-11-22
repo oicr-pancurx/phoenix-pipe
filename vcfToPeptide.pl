@@ -135,8 +135,6 @@ while ($l = <FILE>)
 }
 close FILE;
 
-my ($originalRef, $originalAlt);
-
 while ($l = <STDIN>)
 {
 	if ($l =~ /^##DCC=<analyzed_sample_id="(.*)">/)
@@ -163,10 +161,6 @@ while ($l = <STDIN>)
 				if (($pos >= $refSeq{$name}{cds_start}) and ($pos <= $refSeq{$name}{cds_end}))
 				{
 					$ref = $f[3];
-
-					$originalRef = $ref;
-					$originalAlt = $altGolden;
-
 					$annovarString = "";
 					if ($refSeq{$name}{strand} eq "-")
 					{
@@ -219,7 +213,10 @@ while ($l = <STDIN>)
 								$peptide = substr($newAA, $aaPos-$i, $pepLength);
 								if (length($peptide) == $pepLength)
 								{
-									print "$chr\t$pos\t$originalRef\t$originalAlt\t$peptide\n";
+									unless ($peptide =~ /X/)		# cryptic stopgain
+									{
+										print "$chr\t$pos\t$ref\t$alt\t$peptide\n";
+									}
 								}
 							}
 						}
