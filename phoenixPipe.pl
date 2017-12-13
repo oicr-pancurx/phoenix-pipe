@@ -486,6 +486,7 @@ elsif ($doSub eq "mega")
 	doRealignGATK("gatk/3.5.0", "bwa/0.7.12", "wgs", \%nMeta, "single", \%refHash);
 	doRecalGATK("gatk/3.5.0", "bwa/0.7.12", "wgs", \%nMeta, "single", \%refHash);
 	doHaplotypeGATK("gatk/3.5.0", "bwa/0.7.12", "wgs", \%nMeta, \%refHash);
+	doSliceBAM("gatk/3.5.0", "bwa/0.7.12", \%nMeta, \%refHash);
 }
 
 
@@ -713,6 +714,31 @@ sub getMeta
                 $flowcell = "JHMI";
                 $tissueType = "R";
             }
+			#n_PGDX1539N_Ex.bam_R1.fastq.gz
+			elsif ($library =~ /Ex\.bam/)
+			{
+				$instrument = "JHMI";
+				$flowcell = "JHMI";
+				$tissueType = "R";
+			}
+			elsif ($library =~ /Ex_A\.bam/)
+			{
+				$instrument = "JHMI";
+				$flowcell = "JHMI";
+				$tissueType = "R";
+			}
+			elsif ($library =~ /Ex_B\.bam/)
+			{
+				$instrument = "JHMI";
+				$flowcell = "JHMI";
+				$tissueType = "R";
+			}
+			elsif ($library =~ /R\.bam/)
+			{
+				$instrument = "OICR";
+				$flowcell = "OICR";
+				$tissueType = "R";
+			}
 			else
 			{
 				die "Couldn't parse library $library\n";
@@ -3445,13 +3471,65 @@ sub doHaplotypeGATK
 	}
 
 
-	$normalHash->{vcf}{"$bamModule/$module"}{raw_gvcf}{file} = "$dir/$outName.realn.recal.bam";
+	$normalHash->{vcf}{"$bamModule/$module"}{raw_gvcf}{file} = "$dir/$outName.raw.g.vcf";
 	$normalHash->{vcf}{"$bamModule/$module"}{raw_gvcf}{hold_jid} = "$sgePre$outName";
 	
 	$normalHash->{provenence}{"$dir/$outName.raw.g.vcf"}{command} = "$dir/$outName.cmd";
 	push (@{ $normalHash->{provenence}{"$dir/$outName.raw.g.vcf"}{input}}, $normalBam);
 
 
+}
+
+
+
+sub doSliceBAM
+{
+	my $module = $_[0];
+	my $bamModule = $_[1];
+	my $normalHash = $_[2];
+	my $refHash = $_[3];
+
+	my $pathRoot = buildPath($normalHash);
+	my $sgePre = "s$normalHash->{sge_uniq}";
+	my $normalBam = $normalHash->{bam}{"$bamModule/$module"}{final}{file};
+	my $normalGVcf = $normalHash->{vcf}{"$bamModule/$module"}{raw_gvcf}{file};
+	my $holdJid = $normalHash->{vcf}{"$bamModule/$module"}{raw_gvcf}{hold_jid};
+
+	my $dir = "$pathRoot/$bamModule/$module/review";
+	`mkdir -p $dir`;
+
+	my $fastaRef = $refHash->{"hg19_random"};
+	my $dbsnpRef = $refHash->{"dbSNP"};
+
+	my $outName = $normalHash->{sample};
+
+	unless (-e "$dir/$outName.touch")
+	{
+		`touch $dir/$outName.touch`;
+		open (SUBFILE, ">$dir/$outName.sub") or die;
+		print SUBFILE "qsub -cwd -b y -l h_vmem=16g -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
+		close SUBFILE;
+
+		open (COMMAND, ">$dir/$outName.cmd") or die;
+		print COMMAND "module load $module; module load bedtools; module load $refHash->{samtools};\n";
+		print COMMAND "java -Xmx10g -Djava.io.tmpdir=$dir/$outName.tmp -jar \$GATKROOT/GenomeAnalysisTK.jar -T GenotypeGVCFs -R $fastaRef --variant $normalGVcf -o $dir/$outName.raw.vcf\n";
+		print COMMAND "intersectBed -a $normalBam -b $dir/$outName.raw.vcf > $dir/$outName.review.bam; samtools index $dir/$outName.review.bam;\n";
+		print COMMAND "\necho phoenixPipe/$module/slice-done\n";
+		close COMMAND;
+
+		`bash $dir/$outName.sub`;
+	}
+	else
+	{
+		warn " [GATK-SLICE] Skipping: $dir/$outName.touch\n";
+	}
+
+
+	$normalHash->{vcf}{"$bamModule/$module"}{review_vcf}{file} = "$dir/$outName.raw.vcf";
+	$normalHash->{bam}{"$bamModule/$module"}{review_bam}{file} = "$dir/$outName.review.bam";
+
+	$normalHash->{vcf}{"$bamModule/$module"}{review_vcf}{hold_jid} = "$sgePre$outName";
+	$normalHash->{bam}{"$bamModule/$module"}{review_bam}{hold_jid} = "$sgePre$outName";
 }
 
 
