@@ -116,6 +116,7 @@ my %refHash = (
 	"phoenix reporter" => "$reportCode/phoenixReporter.pl",
 	"short reporter" => "$reportCode/shortReport.pl",
 	"report plots" => "$reportCode/runPlots.sh",
+	"drug annotations" => "$parseCode/DrugAnnotations.pl",
 
 	"cosmicSigNNLS script" => "$pipeCode/vcfToSigs.pl",
 );
@@ -4665,6 +4666,7 @@ sub doPhoenixParser
 	my $prScript = $refHash->{"phoenix reporter"};
 	my $srScript = $refHash->{"short reporter"};
 	my $plotScript = $refHash->{"report plots"};
+	my $drugScript = $refHash->{"drug annotations"};
 
 	open (SUBFILE, ">$dir/$outName.sub") or die;
 	print SUBFILE "qsub -cwd -b y -l h_vmem=2g -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
@@ -4672,7 +4674,8 @@ sub doPhoenixParser
 
 	open (COMMAND, ">$dir/$outName.cmd") or die;
 	print COMMAND "$perlLib; $ppScript $tHash->{working_dir} $tHash->{sample_group} $tHash->{sample} $tHash->{sample_type} $dir\n";
-	print COMMAND "mkdir $dir/plots; module load $rModule; $plotScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir/plots/$outName; $prScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir; $srScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir\n";
+	print COMMAND "mkdir $dir/plots; module load $rModule;\n$plotScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir/plots/$outName;\n$prScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir;\n$srScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir\n";
+	print COMMAND "$drugScript $dir $outName\n";
 	print COMMAND "\necho phoenixPipe/phoenixParser-done\n";
 	close COMMAND;
 
