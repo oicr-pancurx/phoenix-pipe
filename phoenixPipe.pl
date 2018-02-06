@@ -3453,14 +3453,14 @@ sub doHaplotypeGATK
 		`touch $dir/$outName.touch`;
 		open (SUBFILE, ">$dir/$outName.sub") or die;
 #		print SUBFILE "qsub -cwd -b y -l h_vmem=24g,exclusive=1 -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
-		print SUBFILE "qsub -cwd -b y -l h_vmem=4g -pe smp 6 -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
-#		print SUBFILE "qsub -cwd -b y -l h_vmem=8g -pe smp 6 -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
+#		print SUBFILE "qsub -cwd -b y -l h_vmem=4g -pe smp 6 -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
+		print SUBFILE "qsub -cwd -b y -l h_vmem=8g -pe smp 6 -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
 		close SUBFILE;
 
 		open (COMMAND, ">$dir/$outName.cmd") or die;
 #		print COMMAND "module load $module; java -Xmx10g -Djava.io.tmpdir=$dir/$outName.tmp -jar \$GATKROOT/GenomeAnalysisTK.jar -T HaplotypeCaller -I $normalBam -R $fastaRef --dbsnp $dbsnpRef $targetParam --emitRefConfidence GVCF -nct `grep processor /proc/cpuinfo | wc -l` -o $dir/$outName.raw.g.vcf\n";
-		print COMMAND "module load $module; java -Xmx16g -Djava.io.tmpdir=$dir/$outName.tmp -jar \$GATKROOT/GenomeAnalysisTK.jar -T HaplotypeCaller -I $normalBam -R $fastaRef --dbsnp $dbsnpRef $targetParam --emitRefConfidence GVCF -nct 6 -o $dir/$outName.raw.g.vcf\n";
-#		print COMMAND "module load $module; java -Xmx32g -Djava.io.tmpdir=$dir/$outName.tmp -jar \$GATKROOT/GenomeAnalysisTK.jar -T HaplotypeCaller -I $normalBam -R $fastaRef --dbsnp $dbsnpRef $targetParam --emitRefConfidence GVCF -nct 6 -o $dir/$outName.raw.g.vcf\n";
+#		print COMMAND "module load $module; java -Xmx16g -Djava.io.tmpdir=$dir/$outName.tmp -jar \$GATKROOT/GenomeAnalysisTK.jar -T HaplotypeCaller -I $normalBam -R $fastaRef --dbsnp $dbsnpRef $targetParam --emitRefConfidence GVCF -nct 6 -o $dir/$outName.raw.g.vcf\n";
+		print COMMAND "module load $module; java -Xmx32g -Djava.io.tmpdir=$dir/$outName.tmp -jar \$GATKROOT/GenomeAnalysisTK.jar -T HaplotypeCaller -I $normalBam -R $fastaRef --dbsnp $dbsnpRef $targetParam --emitRefConfidence GVCF -nct 6 -o $dir/$outName.raw.g.vcf\n";
 		print COMMAND "\necho phoenixPipe/$module/haplo-done\n";
 		close COMMAND;
 
