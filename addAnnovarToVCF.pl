@@ -22,9 +22,9 @@ while ($l = <FILE>)
 
 	unless ($l =~ /^#/)
 	{
-		$f[0] =~ s/;/:/g;
-		$f[1] =~ s/;/:/g;
-		$varFunc{"$f[7]\t$f[8]\t$f[10]\t$f[11]"} = ";ANNOVAR=$f[0],$f[1]";
+		$f[0] =~ s/;/|/g;
+		$f[1] =~ s/;/|/g;
+		$varFunc{"$f[7]\t$f[8]\t$f[10]\t$f[11]"} = ";ANNOVAR=$f[0];ANNOVAR_G=$f[1]";
 		$varFunc{"$f[7]\t$f[8]\t$f[10]\t$f[11]"} =~ s/ /-/g;
 	}
 }
@@ -43,9 +43,9 @@ while ($l = <FILE>)
 
 	unless ($l =~ /^#/)
 	{
-		$f[0] =~ s/;/:/g;
-		$f[1] =~ s/;/:/g;
-		$exonicVarFunc{"$f[8]\t$f[9]\t$f[11]\t$f[12]"} = ";ANNOVAR_EXONIC=$f[1],$f[2]";
+		$f[0] =~ s/;/|/g;
+		$f[1] =~ s/;/|/g;
+		$exonicVarFunc{"$f[8]\t$f[9]\t$f[11]\t$f[12]"} = ";ANNOVAR_EX=$f[1];ANNOVAR_EX_G=$f[2]";
 		$exonicVarFunc{"$f[8]\t$f[9]\t$f[11]\t$f[12]"} =~ s/ /-/g;
 	}
 }
