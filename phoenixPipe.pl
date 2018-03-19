@@ -71,7 +71,7 @@ my %refHash = (
 	"HMM R script" => "$pipeCode/HMM_pipe_R_v4.sh",
 
 	"blat ref" => "/oicr/data/reference/genomes/homo_sapiens_mc/UCSC/hg19_random/Genomic/blat/hg19_random.fa.2bit",
-	"blat host" => "cn209-39",
+	"blat host" => "cn5-97",
 	"blat port" => "9998",
 	# restart blat server (after qrsh'ing to specific node): nohup gfServer start cn5-83 9998 /oicr/data/reference/genomes/homo_sapiens_mc/UCSC/hg19_random/Genomic/blat/hg19_random.fa.2bit -canStop &
 	"crest filter script" => "$pipeCode/crestFilter_v2.pl",
@@ -3508,7 +3508,7 @@ sub doSliceBAM
 	{
 		`touch $dir/$outName.touch`;
 		open (SUBFILE, ">$dir/$outName.sub") or die;
-		print SUBFILE "qsub -cwd -b y -l h_vmem=16g -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
+		print SUBFILE "qsub -cwd -b y -l h_vmem=24g -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
 		close SUBFILE;
 
 		open (COMMAND, ">$dir/$outName.cmd") or die;
