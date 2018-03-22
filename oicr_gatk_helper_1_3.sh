@@ -392,27 +392,27 @@ done
 
 
 #annotate vcf
-echo
-echo "#annotate vcf"
-rm -rf resources
-ln -s /oicr/data/genomes/homo_sapiens_mc/UCSC/hg19_random/Genomic/gatk/resources
+#echo
+#echo "#annotate vcf"
+#rm -rf resources
+#ln -s /oicr/data/genomes/homo_sapiens_mc/UCSC/hg19_random/Genomic/gatk/resources
 
-R="hg19_random.fa"
-dbSNP="dbSNP142_chr.vcf"
-g1000="1000g_20100804_chr.vcf"
-HapMap="HapMap_r27_nr_hg19_chr.vcf"
-inputSNPVCF="${bname}.realigned.recal.bam.snps.raw.filtered.vcf"
-inputINDELVCF="${bname}.realigned.recal.bam.indels.raw.filtered.vcf"
-PREFIX=${inputVCF%%.*}
-VCFSNPOUTPREFIX=${inputSNPVCF%%.vcf}
-VCFINDELOUTPREFIX=${inputINDELVCF%%.vcf}
+#R="hg19_random.fa"
+#dbSNP="dbSNP142_chr.vcf"
+#g1000="1000g_20100804_chr.vcf"
+#HapMap="HapMap_r27_nr_hg19_chr.vcf"
+#inputSNPVCF="${bname}.realigned.recal.bam.snps.raw.filtered.vcf"
+#inputINDELVCF="${bname}.realigned.recal.bam.indels.raw.filtered.vcf"
+#PREFIX=${inputVCF%%.*}
+#VCFSNPOUTPREFIX=${inputSNPVCF%%.vcf}
+#VCFINDELOUTPREFIX=${inputINDELVCF%%.vcf}
 
 # Generate Variant Annotator.
-echo "module load gatk/${VER}; \${JAVA_HOME}/bin/java -Xmx4g -Djava.io.tmpdir=${TMP_DIR} -jar \${GATKROOT}/GenomeAnalysisTK.jar -et NO_ET -l INFO -R resources/$R -o ${VCFSNPOUTPREFIX}.annotated.vcf --dbsnp resources/$dbSNP -resource:snp resources/$dbSNP -E snp.dbSNPBuildID -E snp.G5 -E snp.G5A -E snp.GMAF -comp:1KG_CEU resources/${g1000} -comp:HapMap resources/${HapMap} --variant ${inputSNPVCF} -T VariantAnnotator" > ./$SCRIPT_DIR/annotateSNP.sh
-echo "module load gatk/${VER}; \${JAVA_HOME}/bin/java -Xmx4g -Djava.io.tmpdir=${TMP_DIR} -jar \${GATKROOT}/GenomeAnalysisTK.jar -et NO_ET -l INFO -R resources/$R -o ${VCFINDELOUTPREFIX}.annotated.vcf --dbsnp resources/$dbSNP -resource:snp resources/$dbSNP -E snp.dbSNPBuildID -E snp.G5 -E snp.G5A -E snp.GMAF -comp:1KG_CEU resources/${g1000} -comp:HapMap resources/${HapMap} --variant ${inputINDELVCF} -T VariantAnnotator" > ./$SCRIPT_DIR/annotateINDEL.sh
+#echo "module load gatk/${VER}; \${JAVA_HOME}/bin/java -Xmx4g -Djava.io.tmpdir=${TMP_DIR} -jar \${GATKROOT}/GenomeAnalysisTK.jar -et NO_ET -l INFO -R resources/$R -o ${VCFSNPOUTPREFIX}.annotated.vcf --dbsnp resources/$dbSNP -resource:snp resources/$dbSNP -E snp.dbSNPBuildID -E snp.G5 -E snp.G5A -E snp.GMAF -comp:1KG_CEU resources/${g1000} -comp:HapMap resources/${HapMap} --variant ${inputSNPVCF} -T VariantAnnotator" > ./$SCRIPT_DIR/annotateSNP.sh
+#echo "module load gatk/${VER}; \${JAVA_HOME}/bin/java -Xmx4g -Djava.io.tmpdir=${TMP_DIR} -jar \${GATKROOT}/GenomeAnalysisTK.jar -et NO_ET -l INFO -R resources/$R -o ${VCFINDELOUTPREFIX}.annotated.vcf --dbsnp resources/$dbSNP -resource:snp resources/$dbSNP -E snp.dbSNPBuildID -E snp.G5 -E snp.G5A -E snp.GMAF -comp:1KG_CEU resources/${g1000} -comp:HapMap resources/${HapMap} --variant ${inputINDELVCF} -T VariantAnnotator" > ./$SCRIPT_DIR/annotateINDEL.sh
 
-echo "qsub -cwd -N ${SGE_PREFIX}${bname}_VariantAnnotatorSNP -hold_jid ${SGE_PREFIX}${bname}_snpsFilterMerge -e gatkLog -o gatkLog -l h_vmem=6G -b y \"bash ./$SCRIPT_DIR/annotateSNP.sh\"";
-echo "qsub -cwd -N ${SGE_PREFIX}${bname}_VariantAnnotatorINDEL -hold_jid ${SGE_PREFIX}${bname}_indelFilterMerge -e gatkLog -o gatkLog -l h_vmem=6G -b y \"bash ./$SCRIPT_DIR/annotateINDEL.sh\"";
+#echo "qsub -cwd -N ${SGE_PREFIX}${bname}_VariantAnnotatorSNP -hold_jid ${SGE_PREFIX}${bname}_snpsFilterMerge -e gatkLog -o gatkLog -l h_vmem=6G -b y \"bash ./$SCRIPT_DIR/annotateSNP.sh\"";
+#echo "qsub -cwd -N ${SGE_PREFIX}${bname}_VariantAnnotatorINDEL -hold_jid ${SGE_PREFIX}${bname}_indelFilterMerge -e gatkLog -o gatkLog -l h_vmem=6G -b y \"bash ./$SCRIPT_DIR/annotateINDEL.sh\"";
 
 # delete temporary bam files
 
