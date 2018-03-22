@@ -2902,9 +2902,9 @@ sub doGATK
 #	$tumourHash->{bam}{"$bamModule/$module"}{realnrecal}{files_pre} = "$dir/bam_files/$outName.bam.realigned.recal.chr";
 #	$tumourHash->{bam}{"$bamModule/$module"}{realnrecal}{hold_jid} = "$sgePre$outName,gatk_$outName\\*";
 
-	$tumourHash->{vcf}{$bamModule}{$module}{snv}{file} = "$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.annotated.vcf";
+	$tumourHash->{vcf}{$bamModule}{$module}{snv}{file} = "$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.vcf";
 	$tumourHash->{vcf}{$bamModule}{$module}{snv}{hold_jid} = "$sgePre$outName";
-	$tumourHash->{vcf}{$bamModule}{$module}{indel}{file} = "$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.annotated.vcf";
+	$tumourHash->{vcf}{$bamModule}{$module}{indel}{file} = "$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.vcf";
 	$tumourHash->{vcf}{$bamModule}{$module}{indel}{hold_jid} = "$sgePre$outName";
 
 	$tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.annotated.vcf"}{command} = "$dir/$outName.cmd";
