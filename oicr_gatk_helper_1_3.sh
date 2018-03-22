@@ -420,7 +420,7 @@ echo
 echo "#delete temporary bam files"
 
 echo "qsub -cwd -b y -N ${SGE_PREFIX}${bname}_clean_tmp_files -hold_jid ${SGE_PREFIX}${bname}_table_recal -e gatkLog -o gatkLog \"rm bam_files/*.bam.realigned.chr*.ba*\""
-echo "qsub -cwd -b y -N ${SGE_PREFIX}${bname}_clean_tmp_files -hold_jid ${SGE_PREFIX}${bname}_VariantAnnotatorSNP,${SGE_PREFIX}${bname}_VariantAnnotatorINDEL -e gatkLog -o gatkLog \"rm bam_files/*.ba?\""
+echo "qsub -cwd -b y -N ${SGE_PREFIX}${bname}_clean_tmp_files -hold_jid ${SGE_PREFIX}${bname}_snpFiltering -e gatkLog -o gatkLog \"rm bam_files/*.ba?\""
 
 
 # touch a file to indicate gatk is done
