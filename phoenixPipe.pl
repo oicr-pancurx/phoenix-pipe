@@ -40,6 +40,7 @@ my %refHash = (
 	"samStats.pl" => "$jsonCode/samStats.pl",
 #	"exome-target" => "/oicr/data/genomes/homo_sapiens/Agilent/SureSelect_Whole_Exome_ICGC_Sanger/GRCh37hg19/sanger.exons.bed.hg19",		# assuming agilent capture!
 	"exome-target" => "/oicr/data/reference/genomes/homo_sapiens_mc/Agilent/SureSelectHumanAllExonV4/S03723314_Regions.bed",		# assuming agilent capture!
+#	"exome-target" => "/.mounts/labs/PCSI/raw_data/agilent/SureSelect_All_Exon_V5_Padded_Sorted.merged.bed",
 	"wgs-target" => "/oicr/data/genomes/homo_sapiens/UCSC/Genomic/UCSC_hg19_random/hg19_random.genome.sizes.bed",
 
 	"add-annovar-script" => "$pipeCode/addAnnovarToVCF.pl",
@@ -61,6 +62,7 @@ my %refHash = (
 	"bwa/0.6.2-mouse-blacklist" => "/oicr/data/reference/genomes/homo_sapiens_mc/BWA-0.6.2_Mouse_Blacklist/mouseall-bwa_0.6.2.vcf.gz",
 	"novocraft/3.00.05-mouse-blacklist" => "/.mounts/labs/prod/phoenix/PCSI/oldmouse/mouseall-novocraft_2.07.05.vcf.gz",
 	"exome-target-tabix" => "/oicr/data/reference/genomes/homo_sapiens_mc/Agilent/SureSelectHumanAllExonV4/S03723314_Regions.merged.bed.gz",
+#	"exome-target-tabix" => "/.mounts/labs/PCSI/raw_data/agilent/SureSelect_All_Exon_V5_Padded_Sorted.merged.bed.gz",
 	"dbsnp-tabix" => "/oicr/data/reference/genomes/homo_sapiens_mc/dbSNP/hg19_random/Genomic/dbSNP137/dbSNP137_chr.vcf.gz",
 	"cosmic-tabix" => "/oicr/data/reference/genomes/homo_sapiens_mc/Cosmic/v64/CosmicCodingMuts_v64_02042013_noLimit_modified_contig_names.vcf.gz",
 	"rmsk" => "/oicr/data/reference/genomes/homo_sapiens_mc/UCSC/hg19_random/Genomic/tracks/UCSC-rmsk-130723.bed.gz",
@@ -229,7 +231,7 @@ unless ($tFastqDir eq "single")
 		doPOLYSOLVER("polysolver/1.0", "bwa/0.6.2", \%nMeta, \%tMeta, \%refHash);
 		doNetMHC("netMHC/pan-2.8", "bwa/0.6.2", "polysolver/1.0", \%nMeta, \%tMeta, \%refHash);
 
-		doCosmicSigNNLS("R/3.3.0", "bwa/0.6.2", \%tMeta, \%refHash);
+		doCosmicSigNNLS("R/3.4.0", "bwa/0.6.2", \%tMeta, \%refHash);
 
 
 	#	doRealignGATK("gatk/2.4.9", "bwa/0.6.2", \%nMeta, \%tMeta, \%refHash);
@@ -274,7 +276,7 @@ unless ($tFastqDir eq "single")
 			doCelluloidMC("R/3.3.0","bwa/0.6.2",\%tMeta, \%refHash);
 			doChromothripsis("R/3.3.0","bwa/0.6.2",\%tMeta, \%refHash);
 
-			doCelluloid("R/3.3.0","bwa/0.6.2",\%tMeta, \%refHash);
+			doCelluloid("R/3.4.0","bwa/0.6.2",\%tMeta, \%refHash);
 
 			doIntegration("bwa/0.6.2", \%tMeta, \%refHash);
 		}
@@ -2907,13 +2909,13 @@ sub doGATK
 	$tumourHash->{vcf}{$bamModule}{$module}{indel}{file} = "$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.vcf";
 	$tumourHash->{vcf}{$bamModule}{$module}{indel}{hold_jid} = "$sgePre$outName";
 
-	$tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.annotated.vcf"}{command} = "$dir/$outName.cmd";
-	$tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.annotated.vcf"}{command} = "$dir/$outName.cmd";
+	$tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.vcf"}{command} = "$dir/$outName.cmd";
+	$tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.vcf"}{command} = "$dir/$outName.cmd";
 
-	push (@{ $tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.annotated.vcf"}{input}}, $normalBam);
-	push (@{ $tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.annotated.vcf"}{input}}, $tumourBam);
-	push (@{ $tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.annotated.vcf"}{input}}, $normalBam);
-	push (@{ $tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.annotated.vcf"}{input}}, $tumourBam);
+	push (@{ $tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.vcf"}{input}}, $normalBam);
+	push (@{ $tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.vcf"}{input}}, $tumourBam);
+	push (@{ $tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.vcf"}{input}}, $normalBam);
+	push (@{ $tumourHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.vcf"}{input}}, $tumourBam);
 
 }
 
@@ -2973,16 +2975,16 @@ sub doSingleGATK
 		warn " [GATK] Skipping: $dir/$outName.touch\n";
 	}
 
-	$normalHash->{vcf}{$bamModule}{$module}{snv}{file} = "$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.annotated.vcf";
+	$normalHash->{vcf}{$bamModule}{$module}{snv}{file} = "$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.vcf";
 	$normalHash->{vcf}{$bamModule}{$module}{snv}{hold_jid} = "$sgePre$outName";
-	$normalHash->{vcf}{$bamModule}{$module}{indel}{file} = "$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.annotated.vcf";
+	$normalHash->{vcf}{$bamModule}{$module}{indel}{file} = "$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.vcf";
 	$normalHash->{vcf}{$bamModule}{$module}{indel}{hold_jid} = "$sgePre$outName";
 
-	$normalHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.annotated.vcf"}{command} = "$dir/$outName.cmd";
-	$normalHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.annotated.vcf"}{command} = "$dir/$outName.cmd";
+	$normalHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.vcf"}{command} = "$dir/$outName.cmd";
+	$normalHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.vcf"}{command} = "$dir/$outName.cmd";
 
-	push (@{ $normalHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.annotated.vcf"}{input}}, $normalBam);
-	push (@{ $normalHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.annotated.vcf"}{input}}, $normalBam);
+	push (@{ $normalHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.snps.raw.filtered.vcf"}{input}}, $normalBam);
+	push (@{ $normalHash->{provenence}{"$dir/$outName.bam.realigned.recal.bam.indels.raw.filtered.vcf"}{input}}, $normalBam);
 
 }
 

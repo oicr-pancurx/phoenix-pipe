@@ -426,7 +426,7 @@ echo "qsub -cwd -b y -N ${SGE_PREFIX}${bname}_clean_tmp_files -hold_jid ${SGE_PR
 # touch a file to indicate gatk is done
 echo
 echo "# touch a file to indicate gatk is done"
-echo "qsub -cwd -b y -N ${SGE_PREFIX}${bname}_done -hold_jid ${SGE_PREFIX}${bname}_VariantAnnotatorSNP,${SGE_PREFIX}${bname}_VariantAnnotatorINDEL -e gatkLog -o gatkLog \"touch gatk_done\""
+echo "qsub -cwd -b y -N ${SGE_PREFIX}${bname}_done -hold_jid ${SGE_PREFIX}${bname}_snpFiltering -e gatkLog -o gatkLog \"touch gatk_done\""
 }
 
 function callableLociWalker
