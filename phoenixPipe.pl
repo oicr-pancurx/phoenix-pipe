@@ -119,8 +119,11 @@ my %refHash = (
 	"short reporter" => "$reportCode/shortReport.pl",
 	"report plots" => "$reportCode/runPlots.sh",
 	"drug annotations" => "$parseCode/DrugAnnotations.pl",
+	"landing page" => "$parseCode/landingPage.pl",
 
 	"cosmicSigNNLS script" => "$pipeCode/vcfToSigs.pl",
+
+	"project dir" => "/.mounts/labs/PCSI/",
 );
 
 
@@ -333,7 +336,7 @@ unless ($tFastqDir eq "single")
 	
 	
 		doQC("bwa/0.6.2", \%tMeta, \%nMeta, \%refHash, $commandLine);
-		doPhoenixParser("bwa/0.6.2", \%tMeta, \%refHash);
+		doPhoenixParser("bwa/0.6.2", \%tMeta, \%nMeta, \%refHash);
 	
 		doProvenance(\%nMeta, \%tMeta);
 	
@@ -4647,7 +4650,8 @@ sub doPhoenixParser
 {
 	my $bamModule = $_[0];
 	my $tHash = $_[1];
-	my $refHash = $_[2];
+	my $nHash = $_[2];
+	my $refHash = $_[3];
 
 	# put qc in the sample root
 
@@ -4669,6 +4673,11 @@ sub doPhoenixParser
 	my $srScript = $refHash->{"short reporter"};
 	my $plotScript = $refHash->{"report plots"};
 	my $drugScript = $refHash->{"drug annotations"};
+	my $landingScript = $refHash->{"landing page"};
+
+	my $landingPath = $dir;
+	my $projDir = $refHash->{"project dir"};
+	$landingPath =~ s/$projDir//;
 
 	open (SUBFILE, ">$dir/$outName.sub") or die;
 	print SUBFILE "qsub -cwd -b y -l h_vmem=2g -q $refHash->{sge_queue} -N $sgePre$outName -hold_jid $holdJid -e $dir/$outName.log -o $dir/$outName.log \"bash $dir/$outName.cmd\" > $dir/$outName.log\n";
@@ -4678,6 +4687,7 @@ sub doPhoenixParser
 	print COMMAND "$perlLib; $ppScript $tHash->{working_dir} $tHash->{sample_group} $tHash->{sample} $tHash->{sample_type} $dir\n";
 	print COMMAND "mkdir $dir/plots; module load $rModule;\n$plotScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir/plots/$outName;\n$prScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir;\n$srScript $dir/$outName.summary.csv $dir/$outName.variants.csv $dir\n";
 	print COMMAND "$drugScript $dir $outName\n";
+	print COMMAND "$landingScript $landingPath $tHash->{sample} $nHash->{sample}\n";
 	print COMMAND "\necho phoenixPipe/phoenixParser-done\n";
 	close COMMAND;
 
